@@ -1,0 +1,64 @@
+{% extends "base.html" %}
+{% block title %}{{ event.title }} · {{ CLUB_NAME }}{% endblock %}
+{% block content %}
+<div class="enter">
+  <a class="back" href="{% url 'events:list' %}"><i class="ph ph-bold ph-arrow-left" aria-hidden="true"></i>All events</a>
+  <header class="page-head">
+    <h1>{{ event.title }}</h1>
+  </header>
+
+  {% if attended %}
+  <div class="callout callout--ok">
+    <i class="ph ph-bold ph-check-circle" aria-hidden="true"></i>
+    <div><strong>You're checked in</strong>Thanks for coming.</div>
+  </div>
+  {% elif is_past %}
+  <div class="callout">
+    <i class="ph ph-bold ph-clock-counter-clockwise" aria-hidden="true"></i>
+    <div><strong>This event has ended</strong>See you at the next one.</div>
+  </div>
+  {% elif event.checkin_open %}
+  <div class="callout callout--live">
+    <i class="ph ph-bold ph-qr-code" aria-hidden="true"></i>
+    <div><strong>Check-in is open</strong>Scan the QR code at the venue with your phone camera.</div>
+  </div>
+  {% endif %}
+
+  <dl class="facts">
+    <div class="fact">
+      <dt><i class="ph ph-bold ph-calendar-blank" aria-hidden="true"></i><span class="visually-hidden">Date</span></dt>
+      <dd><span class="fact__label" aria-hidden="true">Date</span>{{ event.starts_at|date:"l, j F Y" }}</dd>
+    </div>
+    <div class="fact">
+      <dt><i class="ph ph-bold ph-clock" aria-hidden="true"></i><span class="visually-hidden">Time</span></dt>
+      <dd><span class="fact__label" aria-hidden="true">Time</span>{{ event.starts_at|date:"g:i A" }} to {{ event.ends_at|date:"g:i A" }}</dd>
+    </div>
+    <div class="fact">
+      <dt><i class="ph ph-bold ph-map-pin" aria-hidden="true"></i><span class="visually-hidden">Venue</span></dt>
+      <dd><span class="fact__label" aria-hidden="true">Venue</span>{{ event.venue }}</dd>
+    </div>
+    <div class="fact">
+      {% if is_past or is_live %}
+      <dt><i class="ph ph-bold ph-users" aria-hidden="true"></i><span class="visually-hidden">Attended</span></dt>
+      <dd><span class="fact__label" aria-hidden="true">Attended</span><span class="mono">{{ event.attendee_count }}</span>{% if event.capacity %} of {{ event.capacity }}{% endif %}</dd>
+      {% else %}
+      <dt><i class="ph ph-bold ph-users" aria-hidden="true"></i><span class="visually-hidden">Capacity</span></dt>
+      <dd><span class="fact__label" aria-hidden="true">Capacity</span>{% if event.capacity %}{{ event.capacity }} people{% else %}No limit{% endif %}</dd>
+      {% endif %}
+    </div>
+  </dl>
+
+  {% if event.description %}<p class="prose">{{ event.description }}</p>{% endif %}
+
+  {% if can_manage %}
+  <section class="manage" aria-labelledby="manage-h">
+    <h2 id="manage-h">For the committee</h2>
+    <div class="btn-row">
+      <a class="btn btn--primary" href="{% url 'events:qr' event.pk %}" target="_blank" rel="noopener"><i class="ph ph-bold ph-qr-code" aria-hidden="true"></i>Show QR</a>
+      <a class="btn btn--ghost" href="{% url 'admin:events_event_change' event.pk %}">Manage event</a>
+    </div>
+    {% if not event.checkin_open %}<p class="muted">Check-in is closed. Open it in the back-office before showing the QR.</p>{% endif %}
+  </section>
+  {% endif %}
+</div>
+{% endblock %}

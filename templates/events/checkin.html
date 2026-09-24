@@ -1,0 +1,45 @@
+{% extends "base.html" %}
+{% block title %}Check in · {{ CLUB_NAME }}{% endblock %}
+{% block content %}
+<section class="checkin checkin--{{ state }} enter" aria-live="polite">
+  {% if state == "success" %}
+    <div class="checkin__icon"><i class="ph ph-bold ph-check" aria-hidden="true"></i></div>
+    <h1 class="checkin__title">You're in!</h1>
+    <div>
+      <p class="checkin__event">{{ event.title }}</p>
+      <p class="checkin__meta">{{ event.starts_at|date:"D j M, g:i A" }} · {{ event.venue }}</p>
+    </div>
+    <p class="checkin__time">Checked in at {{ attendance.checked_in_at|date:"g:i A" }}</p>
+    <a class="btn btn--ghost" href="{% url 'events:list' %}">Done</a>
+
+  {% elif state == "confirm" %}
+    <div class="checkin__icon"><i class="ph ph-bold ph-hand-waving" aria-hidden="true"></i></div>
+    <h1 class="checkin__title">Check in?</h1>
+    <div>
+      <p class="checkin__event">{{ event.title }}</p>
+      <p class="checkin__meta">{{ event.starts_at|date:"D j M, g:i A" }} · {{ event.venue }}</p>
+    </div>
+    <p class="muted">Checking in as {{ user.full_name }} (<span class="mono">{{ user.student_id }}</span>)</p>
+    <form method="post">
+      {% csrf_token %}
+      <button class="btn btn--primary btn--lg btn--block" type="submit" data-busy="Checking in...">Check me in</button>
+    </form>
+
+  {% else %}
+    <div class="checkin__icon"><i class="ph ph-bold ph-x" aria-hidden="true"></i></div>
+    <h1 class="checkin__title">Can't check in</h1>
+    {% if event %}
+    <div>
+      <p class="checkin__event">{{ event.title }}</p>
+      <p class="checkin__meta">{{ event.starts_at|date:"D j M, g:i A" }} · {{ event.venue }}</p>
+    </div>
+    {% endif %}
+    <p class="checkin__reason">{{ reason }}</p>
+    {% if event %}
+    <a class="btn btn--ghost" href="{{ event.get_absolute_url }}">See event</a>
+    {% else %}
+    <a class="btn btn--ghost" href="{% url 'events:list' %}">See events</a>
+    {% endif %}
+  {% endif %}
+</section>
+{% endblock %}

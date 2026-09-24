@@ -1,0 +1,19 @@
+{% extends "base.html" %}
+{% block title %}Join · {{ CLUB_NAME }}{% endblock %}
+{% block content %}
+<div class="auth enter">
+  <header class="page-head">
+    <h1>Join {{ CLUB_NAME }}</h1>
+    <p>Takes a minute. You'll log in with your student ID.</p>
+  </header>
+
+  <form class="form" method="post" novalidate>
+    {% csrf_token %}
+    {% for error in form.non_field_errors %}<p class="field__error">{{ error }}</p>{% endfor %}
+    {% for field in form %}{% include "includes/field.html" %}{% endfor %}
+    <button class="btn btn--primary btn--block" type="submit" data-busy="Creating account...">Create account</button>
+  </form>
+
+  <p class="form-alt">Already a member? <a href="{% url 'login' %}{% if request.GET.next %}?next={{ request.GET.next|urlencode }}{% endif %}">Log in</a></p>
+</div>
+{% endblock %}

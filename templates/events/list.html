@@ -1,0 +1,45 @@
+{% extends "base.html" %}
+{% block title %}Upcoming events · {{ CLUB_NAME }}{% endblock %}
+{% block content %}
+<div class="enter">
+  <header class="page-head">
+    <h1>Upcoming events</h1>
+    <p>Tap an event for details. Scan the QR at the venue to check in.</p>
+  </header>
+
+  {% if events %}
+  <ul class="event-list">
+    {% for event in events %}
+    <li>
+      <a class="event-row" href="{{ event.get_absolute_url }}">
+        <div class="datebox" aria-hidden="true">
+          <span class="datebox__day">{{ event.starts_at|date:"j" }}</span>
+          <span class="datebox__mon">{{ event.starts_at|date:"M" }}</span>
+        </div>
+        <div class="event-row__body">
+          <span class="event-row__title">{{ event.title }}</span>
+          <span class="event-row__meta">
+            <span><i class="ph ph-bold ph-clock" aria-hidden="true"></i>{{ event.starts_at|date:"D j M, g:i A" }}</span>
+            <span><i class="ph ph-bold ph-map-pin" aria-hidden="true"></i>{{ event.venue }}</span>
+          </span>
+          <span class="event-row__badges">
+            {% if event.pk in attended_ids %}<span class="badge badge--ok"><i class="ph ph-bold ph-check" aria-hidden="true"></i>Checked in</span>
+            {% elif event.checkin_open %}<span class="badge badge--live">Check-in open</span>
+            {% elif event.capacity and event.attendee_count >= event.capacity %}<span class="badge badge--warn">Full</span>
+            {% elif event.capacity %}<span class="badge">{{ event.capacity }} spots</span>
+            {% else %}<span class="badge">Open to all</span>{% endif %}
+          </span>
+        </div>
+      </a>
+    </li>
+    {% endfor %}
+  </ul>
+  {% else %}
+  <div class="empty">
+    <i class="ph ph-bold ph-calendar-x" aria-hidden="true"></i>
+    <h2>No events coming up</h2>
+    <p class="muted">The committee hasn't posted anything new yet. Check back soon.</p>
+  </div>
+  {% endif %}
+</div>
+{% endblock %}

@@ -1,0 +1,51 @@
+{% extends "base.html" %}
+{% block title %}Me · {{ CLUB_NAME }}{% endblock %}
+{% block content %}
+<div class="enter">
+  <header class="page-head id-block">
+    <h1>{{ user.full_name }}</h1>
+    <p><span class="mono">{{ user.student_id }}</span> · {{ user.get_faculty_display }}</p>
+    {% for role in roles %}{% if role.term.is_current %}<p><span class="badge badge--ok">{{ role.get_title_display }}, {{ role.term.name }}</span></p>{% endif %}{% endfor %}
+  </header>
+
+  <div class="stat-grid">
+    <div class="stat">
+      <div class="stat__num">{{ term_count }}</div>
+      <div class="stat__label">{% if term %}Events this term ({{ term.name }}){% else %}Events this term{% endif %}</div>
+    </div>
+    <div class="stat">
+      <div class="stat__num">{{ attendances|length }}</div>
+      <div class="stat__label">Events all time</div>
+    </div>
+  </div>
+
+  <section class="section" aria-labelledby="history-h">
+    <h2 id="history-h">Attendance history</h2>
+    {% if attendances %}
+    <ul class="history">
+      {% for a in attendances %}
+      <li>
+        <a href="{{ a.event.get_absolute_url }}">{{ a.event.title }}</a>
+        <time datetime="{{ a.event.starts_at|date:'c' }}">{{ a.event.starts_at|date:"j M Y" }}</time>
+      </li>
+      {% endfor %}
+    </ul>
+    {% else %}
+    <div class="empty">
+      <i class="ph ph-bold ph-qr-code" aria-hidden="true"></i>
+      <p><strong>No check-ins yet</strong></p>
+      <p class="muted">Come to an event and scan the QR code. It will show up here.</p>
+      <a class="btn btn--ghost" href="{% url 'events:list' %}">See upcoming events</a>
+    </div>
+    {% endif %}
+  </section>
+
+  <section class="section" aria-labelledby="account-h">
+    <h2 id="account-h">Account</h2>
+    <div class="btn-row">
+      {% if user.is_staff %}<a class="btn btn--ghost" href="{% url 'admin:index' %}">Back-office</a>{% endif %}
+      <form method="post" action="{% url 'logout' %}">{% csrf_token %}<button class="btn btn--ghost" type="submit">Log out</button></form>
+    </div>
+  </section>
+</div>
+{% endblock %}

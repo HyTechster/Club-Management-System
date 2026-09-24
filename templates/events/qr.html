@@ -1,0 +1,20 @@
+{% extends "base.html" %}
+{% block title %}QR · {{ event.title }}{% endblock %}
+{% block head %}<meta http-equiv="refresh" content="30">{% endblock %}
+{% block chrome %}
+<main class="qr-page">
+  <header>
+    <h1 class="qr-page__title">{{ event.title }}</h1>
+    <p class="qr-page__meta">{{ event.starts_at|date:"D j M, g:i A" }} · {{ event.venue }}</p>
+  </header>
+  <div class="qr-page__code" role="img" aria-label="QR code to check in to {{ event.title }}">{{ qr }}</div>
+  <footer class="qr-page__foot">
+    {% if event.checkin_open %}
+    <p class="qr-page__hint"><i class="ph ph-bold ph-device-mobile-camera" aria-hidden="true"></i>Scan with your phone camera</p>
+    {% else %}
+    <p class="qr-page__closed">Check-in is closed. Open it in the back-office.</p>
+    {% endif %}
+    <p class="qr-page__count"><span class="mono">{{ attendee_count }}</span> checked in{% if event.capacity %} of {{ event.capacity }}{% endif %}</p>
+  </footer>
+</main>
+{% endblock %}

@@ -1,0 +1,35 @@
+{% extends "base.html" %}
+{% block title %}Log in · {{ CLUB_NAME }}{% endblock %}
+{% block content %}
+<div class="auth enter">
+  <header class="page-head">
+    <h1>Welcome back</h1>
+    <p>{% if next and "/checkin/" in next %}Log in to finish checking in.{% else %}Log in with your student ID.{% endif %}</p>
+  </header>
+
+  <form class="form" method="post" action="{% url 'login' %}" novalidate>
+    {% csrf_token %}
+    {% if form.non_field_errors %}
+    <div class="callout callout--warn" role="alert">
+      <i class="ph ph-bold ph-warning" aria-hidden="true"></i>
+      <div>Student ID or password is wrong. Please try again.</div>
+    </div>
+    {% endif %}
+    <div class="field{% if form.username.errors %} field--invalid{% endif %}">
+      <label for="id_username">Student ID</label>
+      <input type="text" name="username" id="id_username" value="{{ form.username.value|default:'' }}"
+             autocomplete="username" inputmode="numeric" autocapitalize="none" required autofocus>
+      {% for error in form.username.errors %}<p class="field__error">{{ error }}</p>{% endfor %}
+    </div>
+    <div class="field{% if form.password.errors %} field--invalid{% endif %}">
+      <label for="id_password">Password</label>
+      <input type="password" name="password" id="id_password" autocomplete="current-password" required>
+      {% for error in form.password.errors %}<p class="field__error">{{ error }}</p>{% endfor %}
+    </div>
+    <input type="hidden" name="next" value="{{ next }}">
+    <button class="btn btn--primary btn--block" type="submit" data-busy="Logging in...">Log in</button>
+  </form>
+
+  <p class="form-alt">New here? <a href="{% url 'signup' %}{% if next %}?next={{ next|urlencode }}{% endif %}">Join the club</a></p>
+</div>
+{% endblock %}

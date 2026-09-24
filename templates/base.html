@@ -1,0 +1,59 @@
+{% load static %}<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+  <meta name="color-scheme" content="light dark">
+  <meta name="theme-color" content="#fbfbfa" media="(prefers-color-scheme: light)">
+  <meta name="theme-color" content="#151514" media="(prefers-color-scheme: dark)">
+  <title>{% block title %}{{ CLUB_NAME }}{% endblock %}</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Geist:wght@400;500;600;700&family=Geist+Mono:wght@500;600&display=swap">
+  <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@phosphor-icons/web@2.1.1/src/bold/style.css">
+  <link rel="stylesheet" href="{% static 'css/styles.css' %}">
+  {% block head %}{% endblock %}
+</head>
+<body class="{% block body_class %}{% endblock %}">
+{% block chrome %}
+  {% with current=request.resolver_match.url_name %}
+  <header class="site-header">
+    <div class="site-header__inner">
+      <a class="brand" href="{% url 'events:list' %}">
+        <span class="brand__mark" aria-hidden="true">{{ CLUB_NAME|slice:":1" }}</span>
+        <span>{{ CLUB_NAME }}</span>
+      </a>
+      {% if user.is_authenticated %}
+      <nav class="nav" aria-label="Main">
+        <a href="{% url 'events:list' %}" {% if current == 'list' or current == 'detail' %}aria-current="page"{% endif %}>Events</a>
+        <a href="{% url 'committee' %}" {% if current == 'committee' %}aria-current="page"{% endif %}>Committee</a>
+        <a href="{% url 'profile' %}" {% if current == 'profile' %}aria-current="page"{% endif %}>Me</a>
+        {% if user.is_staff %}<a href="{% url 'admin:index' %}">Back-office</a>{% endif %}
+        <form method="post" action="{% url 'logout' %}">{% csrf_token %}<button type="submit">Log out</button></form>
+      </nav>
+      {% endif %}
+    </div>
+  </header>
+
+  <main id="main">
+    {% if messages %}
+    <ul class="messages">{% for m in messages %}<li class="{{ m.tags }}">{{ m }}</li>{% endfor %}</ul>
+    {% endif %}
+    {% block content %}{% endblock %}
+  </main>
+
+  {% if user.is_authenticated %}
+  <nav class="tabbar" aria-label="Main">
+    <a href="{% url 'events:list' %}" {% if current == 'list' or current == 'detail' %}aria-current="page"{% endif %}>
+      <i class="ph ph-bold ph-calendar-blank" aria-hidden="true"></i>Events</a>
+    <a href="{% url 'committee' %}" {% if current == 'committee' %}aria-current="page"{% endif %}>
+      <i class="ph ph-bold ph-users-three" aria-hidden="true"></i>Committee</a>
+    <a href="{% url 'profile' %}" {% if current == 'profile' %}aria-current="page"{% endif %}>
+      <i class="ph ph-bold ph-user-circle" aria-hidden="true"></i>Me</a>
+  </nav>
+  {% endif %}
+  {% endwith %}
+{% endblock %}
+<script src="{% static 'js/app.js' %}" defer></script>
+</body>
+</html>

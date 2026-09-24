@@ -1,0 +1,43 @@
+{% extends "base.html" %}
+{% block title %}Committee · {{ CLUB_NAME }}{% endblock %}
+{% block content %}
+<div class="enter">
+  <header class="page-head">
+    <h1>Committee{% if term %} {{ term.name }}{% endif %}</h1>
+    <p>The people running the club this term. Say hi at the next event.</p>
+  </header>
+
+  {% if exco or ajk %}
+    {% if exco %}
+    <div class="people">
+      {% for role in exco %}
+      <div class="person{% if forloop.first %} person--lead{% endif %}">
+        <span class="avatar" aria-hidden="true">{{ role.member.initials }}</span>
+        <div>
+          <div class="person__name">{{ role.member.full_name }}</div>
+          <div class="person__role">{{ role.get_title_display }}</div>
+        </div>
+      </div>
+      {% endfor %}
+    </div>
+    {% endif %}
+
+    {% if ajk %}
+    <section class="section" aria-labelledby="ajk-h">
+      <h2 id="ajk-h">AJK</h2>
+      <ul class="ajk">
+        {% for role in ajk %}
+        <li><span class="avatar" aria-hidden="true">{{ role.member.initials }}</span>{{ role.member.full_name }}</li>
+        {% endfor %}
+      </ul>
+    </section>
+    {% endif %}
+  {% else %}
+  <div class="empty">
+    <i class="ph ph-bold ph-users-three" aria-hidden="true"></i>
+    <h2>No committee listed yet</h2>
+    <p class="muted">The committee for this term hasn't been added. Check back soon.</p>
+  </div>
+  {% endif %}
+</div>
+{% endblock %}
